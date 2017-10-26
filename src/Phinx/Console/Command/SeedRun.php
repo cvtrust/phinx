@@ -31,6 +31,8 @@ namespace Phinx\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+
 
 class SeedRun extends AbstractCommand
 {
@@ -72,6 +74,16 @@ EOT
 
         $seedSet = $input->getOption('seed');
         $environment = $input->getOption('environment');
+
+        if (empty($seedSet)) {
+            $helper = $this->getHelper('question');
+            $question = new ConfirmationQuestion('You are about to run all the seeds, Are you sure you want to continue?', false, '/^y/i');
+
+            $response = $helper->ask($input, $output, $question);
+            if (empty($response) || !is_string($response) || !preg_match("/^y/i", $response)) {
+                return;
+            }
+        }
 
         if ($environment === null) {
             $environment = $this->getConfig()->getDefaultEnvironment();

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class SeedRunTest extends \PHPUnit_Framework_TestCase
 {
@@ -162,5 +163,140 @@ class SeedRunTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertRegExp('/no environment specified/', $commandTester->getDisplay());
+    }
+
+    public function testInspectWithoutAnySeeders()
+    {
+        $application = new PhinxApplication('testing');
+        $application->add(new SeedRun());
+
+        /** @var SeedRun $command */
+        $command = $application->find('seed:run');
+
+        $ask = function (InputInterface $input, OutputInterface $output, ConfirmationQuestion $question) {
+            static $order = -1;
+
+            $order = $order + 1;
+            $text = $question->getQuestion();
+
+            $output->write($text." => ");
+
+            // handle a question
+            if (strpos($text, 'about to run all the seeds') !== false) {
+                $response = 'y';
+            }
+
+            if (isset($response) === false) {
+                throw new \RuntimeException('Was asked for input on an unhandled question: '.$text);
+            }
+
+            $output->writeln(print_r($response, true));
+            return $response;
+        };
+
+        $helper = $this->getMock('\Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $helper->expects($this->any())
+            ->method('ask')
+            ->will($this->returnCallback($ask));
+
+        $command->getHelperSet()->set($helper, 'question');
+
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+        ]);
+
+        $this->assertRegExp('/about to run all the seeds/', $commandTester->getDisplay());
+    }
+
+    public function testInspectWithoutAnySeedersShouldExit()
+    {
+        $application = new PhinxApplication('testing');
+        $application->add(new SeedRun());
+
+        /** @var SeedRun $command */
+        $command = $application->find('seed:run');
+
+        $ask = function (InputInterface $input, OutputInterface $output, ConfirmationQuestion $question) {
+            static $order = -1;
+
+            $order = $order + 1;
+            $text = $question->getQuestion();
+
+            $output->write($text." => ");
+
+            // handle a question
+            if (strpos($text, 'about to run all the seeds') !== false) {
+                $response = 'n';
+            }
+
+            if (isset($response) === false) {
+                throw new \RuntimeException('Was asked for input on an unhandled question: '.$text);
+            }
+
+            $output->writeln(print_r($response, true));
+            return $response;
+        };
+
+        $helper = $this->getMock('\Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $helper->expects($this->any())
+            ->method('ask')
+            ->will($this->returnCallback($ask));
+
+        $command->getHelperSet()->set($helper, 'question');
+
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+        ]);
+
+        $this->assertNotRegExp('/All Done/', $commandTester->getDisplay());
+    }
+
+    public function testInspectWithoutAnySeedersShouldContinue()
+    {
+        $application = new PhinxApplication('testing');
+        $application->add(new SeedRun());
+
+        /** @var SeedRun $command */
+        $command = $application->find('seed:run');
+
+        $ask = function (InputInterface $input, OutputInterface $output, ConfirmationQuestion $question) {
+            static $order = -1;
+
+            $order = $order + 1;
+            $text = $question->getQuestion();
+
+            $output->write($text." => ");
+
+            // handle a question
+            if (strpos($text, 'about to run all the seeds') !== false) {
+                $response = 'yes';
+            }
+
+            if (isset($response) === false) {
+                throw new \RuntimeException('Was asked for input on an unhandled question: '.$text);
+            }
+
+            $output->writeln(print_r($response, true));
+            return $response;
+        };
+
+        $helper = $this->getMock('\Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $helper->expects($this->any())
+            ->method('ask')
+            ->will($this->returnCallback($ask));
+
+        $command->getHelperSet()->set($helper, 'question');
+
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([
+            'command' => $command->getName(),
+        ]);
+
+        $this->assertRegExp('/All Done/', $commandTester->getDisplay());
     }
 }
