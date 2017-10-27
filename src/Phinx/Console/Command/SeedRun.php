@@ -80,7 +80,7 @@ EOT
             $question = new ConfirmationQuestion('You are about to run all the seeds, Are you sure you want to continue?', false, '/^y/i');
 
             $response = $helper->ask($input, $output, $question);
-            if (empty($response) || !is_string($response) || !preg_match("/^y/i", $response)) {
+            if (!$response) {
                 return;
             }
         }
