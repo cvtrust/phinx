@@ -45,10 +45,12 @@ class SeedRun extends AbstractCommand
         parent::configure();
 
         $this->addOption('--environment', '-e', InputOption::VALUE_REQUIRED, 'The target environment');
+        $this->addOption('--options', '-o', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Extra options (key=value pairs) that will get passed to the seed(s)');
 
         $this->setName('seed:run')
             ->setDescription('Run database seeders')
             ->addOption('--seed', '-s', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'What is the name of the seeder?')
+            ->addOption('--custom', '-c', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Extra params that will get passed to the seed(s)')
             ->setHelp(
                 <<<EOT
 The <info>seed:run</info> command runs all available or individual seeders
@@ -77,7 +79,7 @@ EOT
         $environment = $input->getOption('environment');
 
         $this->checkForUserPrompts($input, $output, $environment);
-        $this->checkIfAllSeedsAreGoingToRun($input, $output);
+        $this->checkIfAllSeedsAreGoingToRun($input, $output, $seedSet);
 
         if ($environment === null) {
             $environment = $this->getConfig()->getDefaultEnvironment();
@@ -129,7 +131,7 @@ EOT
         $output->writeln('<comment>All Done. Took ' . sprintf('%.4fs', $end - $start) . '</comment>');
     }
 
-    protected function checkIfAllSeedsAreGoingToRun(InputInterface $input, OutputInterface $output)
+    protected function checkIfAllSeedsAreGoingToRun(InputInterface $input, OutputInterface $output, $seedSet)
     {
         $helper = $this->getHelper('question');
         if (empty($seedSet)) {

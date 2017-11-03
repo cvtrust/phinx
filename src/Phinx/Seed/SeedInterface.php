@@ -162,4 +162,19 @@ interface SeedInterface
      * @return \Phinx\Db\Table
      */
     public function table($tableName, $options);
+
+    /**
+     * Used to set custom options passed from the input to the seeder
+     *
+     * @param $options
+     * @return \Phinx\Seed\SeedInterface
+     */
+    public function setCustomOptions($options);
+
+    /**
+     * Return the custom options passed to the command
+     *
+     * @return array
+     */
+    public function getCustomOptions();
 }

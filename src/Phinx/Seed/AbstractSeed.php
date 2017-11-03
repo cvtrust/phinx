@@ -61,6 +61,11 @@ abstract class AbstractSeed implements SeedInterface
     protected $output;
 
     /**
+     * @var array
+     */
+    protected $customOptions;
+
+    /**
      * Class Constructor.
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
@@ -214,5 +219,23 @@ abstract class AbstractSeed implements SeedInterface
     public function table($tableName, $options = [])
     {
         return new Table($tableName, $options, $this->getAdapter());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCustomOptions($options)
+    {
+        $this->customOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomOptions()
+    {
+        return $this->customOptions;
     }
 }

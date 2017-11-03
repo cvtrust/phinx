@@ -144,6 +144,7 @@ class Environment
      */
     public function executeSeed(SeedInterface $seed)
     {
+        $seed->setCustomOptions($this->getCustomOptions());
         $seed->setAdapter($this->getAdapter());
 
         // begin the transaction if the adapter supports it
@@ -397,5 +398,15 @@ class Environment
     public function getSchemaTableName()
     {
         return $this->schemaTableName;
+    }
+
+    private function getCustomOptions()
+    {
+        $customOptions = [];
+        array_map(function($option) use(&$customOptions) {
+            $split = explode("=", $option, 2);
+            $customOptions[$split[0]] = $split[1];
+        }, $this->getInput()->getOption('options'));
+        return $customOptions;
     }
 }
