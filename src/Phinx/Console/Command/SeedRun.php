@@ -32,6 +32,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
 
 class SeedRun extends AbstractCommand
@@ -46,10 +47,10 @@ class SeedRun extends AbstractCommand
         $this->addOption('--environment', '-e', InputOption::VALUE_REQUIRED, 'The target environment');
 
         $this->setName('seed:run')
-             ->setDescription('Run database seeders')
-             ->addOption('--seed', '-s', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'What is the name of the seeder?')
-             ->setHelp(
-                 <<<EOT
+            ->setDescription('Run database seeders')
+            ->addOption('--seed', '-s', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'What is the name of the seeder?')
+            ->setHelp(
+                <<<EOT
 The <info>seed:run</info> command runs all available or individual seeders
 
 <info>phinx seed:run -e development</info>
@@ -58,7 +59,7 @@ The <info>seed:run</info> command runs all available or individual seeders
 <info>phinx seed:run -e development -v</info>
 
 EOT
-             );
+            );
     }
 
     /**
@@ -75,15 +76,8 @@ EOT
         $seedSet = $input->getOption('seed');
         $environment = $input->getOption('environment');
 
-        if (empty($seedSet)) {
-            $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion('You are about to run all the seeds, Are you sure you want to continue?', false, '/^y/i');
-
-            $response = $helper->ask($input, $output, $question);
-            if (!$response) {
-                return;
-            }
-        }
+        $this->checkForUserPrompts($input, $output, $environment);
+        $this->checkIfAllSeedsAreGoingToRun($input, $output);
 
         if ($environment === null) {
             $environment = $this->getConfig()->getDefaultEnvironment();
@@ -93,6 +87,7 @@ EOT
         }
 
         $envOptions = $this->getConfig()->getEnvironment($environment);
+
         if (isset($envOptions['adapter'])) {
             $output->writeln('<info>using adapter</info> ' . $envOptions['adapter']);
         }
@@ -132,5 +127,42 @@ EOT
 
         $output->writeln('');
         $output->writeln('<comment>All Done. Took ' . sprintf('%.4fs', $end - $start) . '</comment>');
+    }
+
+    protected function checkIfAllSeedsAreGoingToRun(InputInterface $input, OutputInterface $output)
+    {
+        $helper = $this->getHelper('question');
+        if (empty($seedSet)) {
+            $question = new ConfirmationQuestion('You are about to run all the seeds, are you sure you want to continue? ', false, '/^y/i');
+            $response = $helper->ask($input, $output, $question);
+            if (!$response) {
+                exit(0);
+            }
+        }
+    }
+
+    protected function checkForUserPrompts(InputInterface $input, OutputInterface $output, $environment)
+    {
+        $helper = $this->getHelper('question');
+
+        $envOptions = $this->getConfig()->getEnvironment($environment);
+        $configEnvironments = $this->getManager()->getConfig()->getEnvironments();
+
+        foreach ($envOptions as $optionKey => $optionValue) {
+            if ($optionValue === "--prompt--") {
+                $question = new Question(ucfirst($optionKey) . ': ', false);
+
+                if (stristr($optionKey, 'pass')) {
+                    $question = new Question(ucfirst($optionKey) . ' (hidden): ', false);
+                    $question->setHidden(true);
+                    $question->setHiddenFallback(false);
+                }
+
+                $response = $helper->ask($input, $output, $question);
+                $configEnvironments[$environment][$optionKey] = trim($response);
+            }
+        }
+
+        $this->getManager()->getConfig()->offsetSet('environments', $configEnvironments);
     }
 }
