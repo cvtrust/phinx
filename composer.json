@@ -1,11 +1,15 @@
 {
-    "name": "robmorgan/phinx",
+    "name": "cvtrust/phinx",
     "type": "library",
     "description": "Phinx makes it ridiculously easy to manage the database migrations for your PHP app.",
     "keywords": ["phinx", "migrations", "database", "db", "database migrations"],
     "homepage": "https://phinx.org",
     "license": "MIT",
     "authors": [{
+        "name": "Chad Woskoski",
+        "email": "chadw@cvtrust.org",
+        "role": "Lead Developer"
+    }, {
         "name": "Rob Morgan",
         "email": "robbym@gmail.com",
         "homepage": "https://robmorgan.id.au",
