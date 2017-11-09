@@ -50,7 +50,6 @@ class SeedRun extends AbstractCommand
         $this->setName('seed:run')
             ->setDescription('Run database seeders')
             ->addOption('--seed', '-s', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'What is the name of the seeder?')
-            ->addOption('--custom', '-c', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Extra params that will get passed to the seed(s)')
             ->setHelp(
                 <<<EOT
 The <info>seed:run</info> command runs all available or individual seeders
@@ -78,15 +77,15 @@ EOT
         $seedSet = $input->getOption('seed');
         $environment = $input->getOption('environment');
 
-        $this->checkForUserPrompts($input, $output, $environment);
-        $this->checkIfAllSeedsAreGoingToRun($input, $output, $seedSet);
-
         if ($environment === null) {
             $environment = $this->getConfig()->getDefaultEnvironment();
             $output->writeln('<comment>warning</comment> no environment specified, defaulting to: ' . $environment);
         } else {
             $output->writeln('<info>using environment</info> ' . $environment);
         }
+
+        $this->checkForUserPrompts($input, $output, $environment);
+        $this->checkIfAllSeedsAreGoingToRun($input, $output, $seedSet);
 
         $envOptions = $this->getConfig()->getEnvironment($environment);
 
