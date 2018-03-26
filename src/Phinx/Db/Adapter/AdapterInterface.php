@@ -63,6 +63,7 @@ interface AdapterInterface
     const PHINX_TYPE_JSONB = 'jsonb';
     const PHINX_TYPE_UUID = 'uuid';
     const PHINX_TYPE_FILESTREAM = 'filestream';
+    const PHINX_TYPE_TINYINT = 'tinyint';
 
     // Geospatial database types
     const PHINX_TYPE_GEOMETRY = 'geometry';
@@ -559,3 +560,4 @@ interface AdapterInterface
      */
     public function castToBool($value);
 }
+
