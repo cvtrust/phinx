@@ -64,6 +64,7 @@ interface AdapterInterface
     const PHINX_TYPE_UUID = 'uuid';
     const PHINX_TYPE_FILESTREAM = 'filestream';
     const PHINX_TYPE_TINYINT = 'tinyint';
+    const PHINX_TYPE_SMALLDATETIME = 'smalldatetime';
 
     // Geospatial database types
     const PHINX_TYPE_GEOMETRY = 'geometry';
