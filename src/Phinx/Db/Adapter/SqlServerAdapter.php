@@ -883,8 +883,6 @@ ORDER BY T.[name], I.[index_id];";
                 return ['name' => 'uniqueidentifier'];
             case static::PHINX_TYPE_FILESTREAM:
                 return ['name' => 'varbinary', 'limit' => 'max'];
-            case static::PHINX_TYPE_TINYINT:
-                return ['name' => 'tinyint'];
             case static::PHINX_TYPE_SMALLDATETIME:
                 return ['name' => 'smalldatetime'];
             // Geospatial database types
@@ -953,8 +951,6 @@ ORDER BY T.[name], I.[index_id];";
                 return static::PHINX_TYPE_UUID;
             case 'filestream':
                 return static::PHINX_TYPE_FILESTREAM;
-            case 'tinyint':
-                return static::PHINX_TYPE_TINYINT;
             case 'smalldatetime':
                 return static::PHINX_TYPE_SMALLDATETIME;
             default:

@@ -48,6 +48,7 @@ interface AdapterInterface
     const PHINX_TYPE_CHAR = 'char';
     const PHINX_TYPE_TEXT = 'text';
     const PHINX_TYPE_INTEGER = 'integer';
+    const PHINX_TYPE_TINY_INTEGER = 'tinyint';
     const PHINX_TYPE_SMALL_INTEGER = 'smallint';
     const PHINX_TYPE_BIG_INTEGER = 'biginteger';
     const PHINX_TYPE_FLOAT = 'float';
@@ -64,7 +65,6 @@ interface AdapterInterface
     const PHINX_TYPE_JSONB = 'jsonb';
     const PHINX_TYPE_UUID = 'uuid';
     const PHINX_TYPE_FILESTREAM = 'filestream';
-    const PHINX_TYPE_TINYINT = 'tinyint';
     const PHINX_TYPE_SMALLDATETIME = 'smalldatetime';
 
     // Geospatial database types
