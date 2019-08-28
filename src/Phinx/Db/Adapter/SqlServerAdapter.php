@@ -212,8 +212,8 @@ class SqlServerAdapter extends PdoAdapter implements AdapterInterface
         if (!isset($options['id']) || (isset($options['id']) && $options['id'] === true)) {
             $column = new Column();
             $column->setName('id')
-                   ->setType('integer')
-                   ->setIdentity(true);
+                ->setType('integer')
+                ->setIdentity(true);
 
             array_unshift($columns, $column);
             $options['primary_key'] = 'id';
@@ -221,8 +221,8 @@ class SqlServerAdapter extends PdoAdapter implements AdapterInterface
             // Handle id => "field_name" to support AUTO_INCREMENT
             $column = new Column();
             $column->setName($options['id'])
-                   ->setType('integer')
-                   ->setIdentity(true);
+                ->setType('integer')
+                ->setIdentity(true);
 
             array_unshift($columns, $column);
             $options['primary_key'] = $options['id'];
@@ -376,11 +376,11 @@ class SqlServerAdapter extends PdoAdapter implements AdapterInterface
         foreach ($rows as $columnInfo) {
             $column = new Column();
             $column->setName($columnInfo['name'])
-                   ->setType($this->getPhinxType($columnInfo['type']))
-                   ->setNull($columnInfo['null'] !== 'NO')
-                   ->setDefault($this->parseDefault($columnInfo['default']))
-                   ->setIdentity($columnInfo['identity'] === '1')
-                   ->setComment($this->getColumnComment($columnInfo['table_name'], $columnInfo['name']));
+                ->setType($this->getPhinxType($columnInfo['type']))
+                ->setNull($columnInfo['null'] !== 'NO')
+                ->setDefault($this->parseDefault($columnInfo['default']))
+                ->setIdentity($columnInfo['identity'] === '1')
+                ->setComment($this->getColumnComment($columnInfo['table_name'], $columnInfo['name']));
 
             if (!empty($columnInfo['char_length'])) {
                 $column->setLimit($columnInfo['char_length']);
@@ -660,7 +660,7 @@ ORDER BY T.[name], I.[index_id];";
 
         foreach ($indexes as $name => $index) {
             if ($name === $indexName) {
-                 return true;
+                return true;
             }
         }
 
@@ -857,6 +857,10 @@ ORDER BY T.[name], I.[index_id];";
                 return ['name' => 'ntext'];
             case static::PHINX_TYPE_INTEGER:
                 return ['name' => 'int'];
+            case static::PHINX_TYPE_TINY_INTEGER:
+                return ['name' => 'tinyint'];
+            case static::PHINX_TYPE_SMALL_INTEGER:
+                return ['name' => 'smallint'];
             case static::PHINX_TYPE_BIG_INTEGER:
                 return ['name' => 'bigint'];
             case static::PHINX_TYPE_FLOAT:
@@ -915,6 +919,10 @@ ORDER BY T.[name], I.[index_id];";
             case 'int':
             case 'integer':
                 return static::PHINX_TYPE_INTEGER;
+            case 'tinyint':
+                return static::PHINX_TYPE_TINY_INTEGER;
+            case 'smallint':
+                return static::PHINX_TYPE_SMALL_INTEGER;
             case 'decimal':
             case 'numeric':
             case 'money':
